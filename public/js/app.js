@@ -358,3 +358,10 @@ $('voice-leave').addEventListener('click', () => voice.leave());
 socket.on('disconnect', () => { voice.leave(); toast('Connection lost — reconnecting…'); });
 
 if (!store.get('ogp-name')) show('login');
+
+// Installable app: register the service worker scoped to this app.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch((e) => console.warn('service worker failed', e));
+  });
+}

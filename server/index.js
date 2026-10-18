@@ -26,7 +26,12 @@ if (process.env.TURN_URL) {
 }
 
 const app = express();
-app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(express.static(path.join(__dirname, '..', 'public'), {
+  setHeaders(res, file) {
+    if (file.endsWith('.webmanifest')) res.setHeader('Content-Type', 'application/manifest+json');
+    if (file.endsWith('sw.js')) res.setHeader('Cache-Control', 'no-cache');
+  },
+}));
 const server = http.createServer(app);
 const io = new Server(server);
 

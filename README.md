@@ -41,6 +41,15 @@ Table ids: `penny` (1/2), `porch` (5/10), `vfw` (10/20), `backroom` (25/50), `hi
 - Some players are on strict NATs, such as some mobile carriers or corporate networks. For their voice to connect you need a TURN server. Set `TURN_URL`, `TURN_USER` and `TURN_PASS`; coturn or a hosted TURN service both work.
 - Mesh voice is fine for 8 people at a table. If you ever want bigger rooms, switch to an SFU such as LiveKit.
 
+## Installing as an app (PWA)
+
+In Chrome or Edge, use the install icon in the address bar. On a phone, use **Add to Home Screen**.
+
+- The manifest `id` is fixed at `/apps/forgecreativeco-old-guys-poker` and doesn't depend on `start_url`. The browser keeps this install separate from any other installed game, and you can change the start URL later without breaking existing installs. Don't change the `id`: doing so creates a second app.
+- `launch_handler: focus-existing` means opening the app again focuses the window you already have instead of starting another one.
+- The service worker (`public/sw.js`) caches only the app shell, and only in caches named `ogp-*`. It never touches `/socket.io/`. To ship UI changes to installed apps, bump `VERSION` in `sw.js`.
+- **One app per origin:** the app's scope is `/`. If you ever host another game on the *same* domain, put each game on its own path, give each its own `scope` and `start_url`, and keep the `id`s different. Otherwise links can open in the wrong app.
+
 ## Tests
 
 ```bash
