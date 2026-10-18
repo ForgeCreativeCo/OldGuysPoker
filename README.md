@@ -35,9 +35,26 @@ Table ids: `penny` (1/2), `porch` (5/10), `vfw` (10/20), `backroom` (25/50), `hi
 - Disconnects: your seat is held for 90s. Reload and you're put right back in it.
 - Keyboard: `F` fold, `C` check/call, `R` raise.
 
-## Deploying for friends
+## Deploying: Netlify (page) + Render (game server)
 
-- Browsers only allow the microphone on **HTTPS** (or localhost), so put it behind HTTPS, for example on Render, Railway, Fly.io, or behind Caddy/nginx.
+Netlify hosts the web page and Render runs the game server. They're split because the dealer, tables, bots and voice-chat connection setup need a server that stays running, and Netlify only serves static files.
+
+**1. Render (game server)**
+1. In Render, choose **New → Blueprint** and pick this repo. It reads [render.yaml](render.yaml): `npm start`, health check `/healthz`, free plan.
+2. Note the service URL. If it isn't `https://oldguyspoker.onrender.com`, put the real one in `GAME_SERVER` in [public/config.js](public/config.js).
+3. `ALLOWED_ORIGINS` lists the sites allowed to connect, comma-separated. Add your custom domain there if you get one.
+
+**2. Netlify (web page)**
+- [netlify.toml](netlify.toml) publishes `public/` with no build step, so a push to `main` redeploys automatically.
+
+**Things to know**
+- **Cold starts:** the free Render plan sleeps after about 15 minutes idle. The first visit after that shows "Waking up the game server…" for up to a minute.
+- **Restarts don't lose chips:** when Render stops or restarts the server, everyone at a table gets their chips back in their bankroll first.
+- **Bankrolls reset on redeploy:** they live in `data/players.json`, and Render's free disk is wiped on each deploy. To keep them, add a Render disk (paid plans only) and set `DATA_FILE` to a path on it, or move bankrolls to a database.
+- **HTTPS:** both hosts provide it, and the microphone requires it.
+- **Local dev:** nothing changes. `npm start` serves the page and the server together on localhost:3000.
+
+### Voice
 - Some players are on strict NATs, such as some mobile carriers or corporate networks. For their voice to connect you need a TURN server. Set `TURN_URL`, `TURN_USER` and `TURN_PASS`; coturn or a hosted TURN service both work.
 - Mesh voice is fine for 8 people at a table. If you ever want bigger rooms, switch to an SFU such as LiveKit.
 

@@ -8,6 +8,9 @@ const { BotManager } = require('./bots');
 
 const PORT = process.env.PORT || 3000;
 const RECONNECT_GRACE_MS = 90_000;
+// Sites allowed to host the page and connect to this server (comma-separated).
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'https://oldguyspoker.netlify.app')
+  .split(',').map((o) => o.trim()).filter(Boolean);
 
 const TABLE_CONFIGS = [
   // Bots fill this one whenever a human sits down, so you can always get a game.
@@ -26,6 +29,7 @@ if (process.env.TURN_URL) {
 }
 
 const app = express();
+app.get('/healthz', (req, res) => res.send('ok'));
 app.use(express.static(path.join(__dirname, '..', 'public'), {
   setHeaders(res, file) {
     if (file.endsWith('.webmanifest')) res.setHeader('Content-Type', 'application/manifest+json');
@@ -33,7 +37,19 @@ app.use(express.static(path.join(__dirname, '..', 'public'), {
   },
 }));
 const server = http.createServer(app);
-const io = new Server(server);
+// No Origin header = a non-browser client. Local dev and this server's own
+// page are always fine; anything else must be on the allowlist.
+function originAllowed(origin, host) {
+  if (!origin) return true;
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return true;
+  try { if (host && new URL(origin).host === host) return true; } catch { return false; } // e.g. "null"
+  return ALLOWED_ORIGINS.includes(origin);
+}
+const io = new Server(server, {
+  cors: { origin: (origin, cb) => cb(null, originAllowed(origin)) },
+  // CORS doesn't cover WebSockets, so check the origin on every connection too.
+  allowRequest: (req, cb) => cb(null, originAllowed(req.headers.origin, req.headers.host)),
+});
 
 const room = (id) => `table:${id}`;
 const voiceRoom = (id) => `voice:${id}`;
@@ -232,5 +248,22 @@ io.on('connection', (socket) => {
     dropTimers.set(id, setTimeout(() => { dropTimers.delete(id); standUp(id); }, RECONNECT_GRACE_MS));
   });
 });
+
+// Hosts like Render stop or restart the server (deploys, idle sleep). Pay
+// everyone's table chips back to their bankrolls first, so nobody loses
+// their stack. Chips already in an unfinished pot go back to whoever put them in.
+function shutdown() {
+  for (const t of tables.values()) {
+    // At showdown the pot has already been paid into stacks.
+    const potUnpaid = t.handActive && t.phase !== 'showdown';
+    for (const s of t.seats) {
+      if (s && !s.bot) store.adjust(s.playerId, s.stack + (potUnpaid ? s.contributed : 0));
+    }
+  }
+  store.flush();
+  process.exit(0);
+}
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
 
 server.listen(PORT, () => console.log(`Old Guys Poker running at http://localhost:${PORT}`));

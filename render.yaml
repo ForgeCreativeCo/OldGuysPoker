@@ -1,0 +1,14 @@
+# Render Blueprint for the game server (dealer, tables, bots, voice signaling).
+# In Render: New > Blueprint > pick this repo.
+services:
+  - type: web
+    name: oldguyspoker
+    runtime: node
+    plan: free
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: ALLOWED_ORIGINS
+        value: https://oldguyspoker.netlify.app

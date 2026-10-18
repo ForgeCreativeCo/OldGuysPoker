@@ -3,7 +3,8 @@ import { Voice } from './voice.js';
 import { sfx } from './sound.js';
 
 const $ = (id) => document.getElementById(id);
-const socket = io();
+// Empty URL = same origin (local dev). On Netlify this is the Render server.
+const socket = window.OGP_SERVER_URL ? io(window.OGP_SERVER_URL, { transports: ['websocket', 'polling'] }) : io();
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
   set(k, v) { try { localStorage.setItem(k, v); } catch { /* private mode */ } },
@@ -356,6 +357,7 @@ $('voice-mute').addEventListener('click', () => voice.setMuted(!voice.muted));
 $('voice-leave').addEventListener('click', () => voice.leave());
 
 socket.on('disconnect', () => { voice.leave(); toast('Connection lost — reconnecting…'); });
+socket.on('connect_error', () => toast('Waking up the game server… this can take up to a minute'));
 
 if (!store.get('ogp-name')) show('login');
 

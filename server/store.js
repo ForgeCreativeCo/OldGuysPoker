@@ -20,6 +20,13 @@ function save() {
   }, 500);
 }
 
+/** Write immediately (used on shutdown). */
+function flush() {
+  clearTimeout(saveTimer);
+  fs.mkdirSync(path.dirname(FILE), { recursive: true });
+  fs.writeFileSync(FILE, JSON.stringify(byToken, null, 1));
+}
+
 function cleanName(name) {
   const n = String(name || '').replace(/[^\p{L}\p{N} _.'-]/gu, '').trim().slice(0, 16);
   return n || 'Player';
@@ -61,4 +68,4 @@ function refill(id) {
   return p;
 }
 
-module.exports = { login, get, adjust, refill, STARTING_BANKROLL };
+module.exports = { login, get, adjust, refill, flush, STARTING_BANKROLL };
