@@ -28,6 +28,7 @@ class Table {
     this.maxBuyIn = cfg.maxBuyIn || cfg.bb * 100;
     this.timing = { ...DEFAULT_TIMING, ...(cfg.timing || {}) };
     this.hooks = hooks;
+    this.botsEnabled = !!cfg.bots;
 
     this.seats = new Array(MAX_SEATS).fill(null);
     this.phase = 'waiting';
@@ -92,7 +93,7 @@ class Table {
     if (this.seatOf(player.id) !== -1) return { error: 'Already seated here' };
     if (!Number.isInteger(buyIn) || buyIn < this.minBuyIn || buyIn > this.maxBuyIn) return { error: 'Invalid buy-in' };
     this.seats[index] = {
-      playerId: player.id, name: player.name, color: player.color, stack: buyIn,
+      playerId: player.id, name: player.name, color: player.color, stack: buyIn, bot: !!player.bot,
       hole: [], bet: 0, contributed: 0, folded: false, allIn: false, acted: false, inHand: false,
       sittingOut: false, leaving: false, disconnected: false, timeouts: 0, lastAction: null, best: null,
     };
@@ -446,8 +447,8 @@ class Table {
   summary() {
     return {
       id: this.id, name: this.name, sb: this.sb, bb: this.bb,
-      minBuyIn: this.minBuyIn, maxBuyIn: this.maxBuyIn, handActive: this.handActive,
-      seats: this.seats.map((s) => (s ? { name: s.name, color: s.color, stack: s.stack } : null)),
+      minBuyIn: this.minBuyIn, maxBuyIn: this.maxBuyIn, handActive: this.handActive, bots: this.botsEnabled,
+      seats: this.seats.map((s) => (s ? { name: s.name, color: s.color, stack: s.stack, bot: s.bot } : null)),
     };
   }
 
@@ -471,7 +472,7 @@ class Table {
         if (!s) return null;
         const showCards = i === mySeat || (reveal && s.inHand && !s.folded);
         return {
-          playerId: s.playerId, name: s.name, color: s.color, stack: s.stack, bet: s.bet,
+          playerId: s.playerId, name: s.name, color: s.color, stack: s.stack, bet: s.bet, bot: s.bot,
           folded: s.folded, allIn: s.allIn, inHand: s.inHand, sittingOut: s.sittingOut,
           leaving: s.leaving, disconnected: s.disconnected, lastAction: s.lastAction,
           cards: showCards ? s.hole : s.inHand && !s.folded ? s.hole.map(() => null) : [],

@@ -4,11 +4,14 @@ const express = require('express');
 const { Server } = require('socket.io');
 const { Table } = require('./poker/table');
 const store = require('./store');
+const { BotManager } = require('./bots');
 
 const PORT = process.env.PORT || 3000;
 const RECONNECT_GRACE_MS = 90_000;
 
 const TABLE_CONFIGS = [
+  // Bots fill this one whenever a human sits down, so you can always get a game.
+  { id: 'practice', name: 'Practice Table', sb: 5, bb: 10, bots: true },
   { id: 'penny', name: 'Penny Ante', sb: 1, bb: 2 },
   { id: 'porch', name: 'The Front Porch', sb: 5, bb: 10 },
   { id: 'vfw', name: 'VFW Hall', sb: 10, bb: 20 },
@@ -48,8 +51,10 @@ function sendBankroll(playerId) {
   for (const s of playerSockets.get(playerId) || []) io.to(s).emit('bankroll', p.bankroll);
 }
 
+const bots = new BotManager();
 const hooks = {
   update(table) {
+    bots.onUpdate(table);
     for (const s of socketsIn(room(table.id))) s.emit('table:state', table.view(s.data.playerId));
     broadcastLobby();
   },

@@ -101,6 +101,8 @@ input:focus { border-color: var(--gold-2); }
 .tc-name { font-family: Rye, serif; font-size: 19px; color: var(--gold); }
 .tc-meta { color: var(--muted); font-size: 13px; }
 .live { color: var(--green); }
+.badge { font: 700 11px Inter; vertical-align: middle; padding: 2px 8px; border-radius: 999px; background: #34404a; color: #cfe3f2; margin-left: 6px; }
+.table-card.practice { border-color: #4a6272; background: linear-gradient(160deg, #1d2328, var(--panel)); }
 
 /* ---------- table screen ---------- */
 .table-body { flex: 1; display: flex; min-height: 0; }

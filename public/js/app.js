@@ -84,15 +84,15 @@ function renderLobby() {
   for (const t of app.tables) {
     const seated = t.seats.filter(Boolean).length;
     const card = document.createElement('div');
-    card.className = 'table-card';
+    card.className = `table-card ${t.bots ? 'practice' : ''}`;
     card.innerHTML = `
       <div class="mini-wrap"><div class="mini">
         <div class="mini-felt"></div><div class="mini-dealer">🤖</div>
       </div></div>
       <div class="tc-info">
-        <div class="tc-name">${escapeHTML(t.name)}</div>
+        <div class="tc-name">${escapeHTML(t.name)}${t.bots ? ' <span class="badge">🤖 Bots</span>' : ''}</div>
         <div class="tc-meta">Blinds ${fmt(t.sb)}/${fmt(t.bb)} · Buy-in ${fmt(t.minBuyIn)}–${fmt(t.maxBuyIn)}</div>
-        <div class="tc-meta">${seated}/8 seated ${t.handActive ? '· <span class="live">hand in progress</span>' : ''}</div>
+        <div class="tc-meta">${t.bots ? 'Computer players fill in when you sit down' : `${seated}/8 seated`} ${t.handActive ? '· <span class="live">hand in progress</span>' : ''}</div>
       </div>
       <button class="btn small ghost watch">Watch</button>`;
     const mini = card.querySelector('.mini');

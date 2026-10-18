@@ -206,7 +206,7 @@ export class TableView {
       const face = seatEl.querySelector('.face');
       face.textContent = initials(s.name);
       face.style.background = s.color || '#888';
-      seatEl.querySelector('.name').textContent = s.name;
+      seatEl.querySelector('.name').textContent = s.bot ? `${s.name} 🤖` : s.name;
       seatEl.querySelector('.stack').textContent =
         s.disconnected ? 'Disconnected' : s.sittingOut ? `Sitting out · ${fmt(s.stack)}` : fmt(s.stack);
 
