@@ -2,7 +2,7 @@
 // window opens instantly. Gameplay always needs the live server.
 // Cache names are prefixed "ogp-" so we only ever clean up our own caches,
 // never those of another app that shares this origin.
-const VERSION = 'ogp-shell-v3';
+const VERSION = 'ogp-shell-v4';
 const SHELL = [
   '/',
   '/index.html',
@@ -17,6 +17,9 @@ const SHELL = [
   '/icons/icon.svg',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
+  '/sounds/card.mp3',
+  '/sounds/chips.mp3',
+  '/sounds/all-in.mp3',
 ];
 
 self.addEventListener('install', (e) => {

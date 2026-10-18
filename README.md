@@ -74,3 +74,10 @@ npm test
 ```
 
 The tests cover hand rankings and kickers, side-pot payouts, and a randomized multi-hand simulation that checks no chips are created or lost.
+
+## Credits
+
+Sound effects in `public/sounds/` (from Pixabay; check each sound's page for its license terms):
+- `all-in.mp3`: "All In Push Chips" by freesound_community
+- `card.mp3`: "Taking Playing Card" by oxidvideos
+- `chips.mp3`: "Placing Poker Chips" by oxidvideos

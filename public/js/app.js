@@ -172,7 +172,6 @@ function renderTable(state) {
   const myTurn = state.me && state.me.legal;
   const wasMyTurn = prev && prev.handId === state.handId && prev.me && prev.me.legal;
   if (myTurn && !wasMyTurn) sfx.turn();
-  if (prev && prev.handId === state.handId && state.board.length > prev.board.length) sfx.card();
   if (state.results && (!prev || !prev.results) && state.me && state.results.won[state.me.seat] != null) sfx.win();
 }
 
@@ -243,10 +242,9 @@ function doAction(kind) {
   const legal = app.state && app.state.me && app.state.me.legal;
   if (!legal) return;
   if (kind === 'fold') emit('table:action', { action: 'fold' });
-  else if (kind === 'call') { emit('table:action', { action: legal.canCheck ? 'check' : 'call' }); legal.canCheck ? sfx.check() : sfx.chips(); }
+  else if (kind === 'call') emit('table:action', { action: legal.canCheck ? 'check' : 'call' });
   else if (kind === 'raise' && legal.canRaise) {
     emit('table:action', { action: 'raise', amount: Number($('raise-input').value) });
-    sfx.chips();
   }
 }
 document.querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => doAction(b.dataset.act)));
@@ -316,8 +314,27 @@ function log(html, cls = '') {
 socket.on('table:event', (evt) => {
   log(`<b class="dealer-name">Dealer</b> ${escapeHTML(evt.text)}`, evt.type);
   if (app.view && ['deal', 'board', 'win'].includes(evt.type)) app.view.say(evt.text);
-  if (evt.type === 'deal') sfx.card();
+  playEventSound(evt);
 });
+
+// Sounds follow the dealer's events, so everyone hears every action.
+function playEventSound(evt) {
+  if (evt.type === 'deal') sfx.card(4);
+  else if (evt.type === 'board') sfx.card(evt.text.startsWith('The flop') ? 3 : 1);
+  else if (evt.type === 'action') {
+    if (evt.action === 'All-in') sfx.allin();
+    else if (evt.action === 'Check') sfx.check();
+    else if (['Call', 'Bet', 'Raise'].includes(evt.action)) sfx.chips();
+  }
+}
+
+// Sound on/off (remembered on this device).
+function renderSoundBtn() {
+  $('sound-btn').textContent = sfx.enabled ? '🔊' : '🔇';
+  $('sound-btn').title = sfx.enabled ? 'Sound on' : 'Sound off';
+}
+$('sound-btn').addEventListener('click', () => { sfx.setEnabled(!sfx.enabled); renderSoundBtn(); });
+renderSoundBtn();
 
 socket.on('table:chat', ({ name, color, text }) => {
   log(`<b style="color:${escapeHTML(color)}">${escapeHTML(name)}</b> ${escapeHTML(text)}`, 'chat');
