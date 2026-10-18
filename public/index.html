@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Old Guys Poker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Rye&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Login -->
+  <section id="login" class="screen">
+    <div class="login-card">
+      <div class="logo">Old Guys Poker</div>
+      <p class="tag">Texas Hold'em · Play money only · Voice chat</p>
+      <form id="login-form">
+        <input id="login-name" maxlength="16" placeholder="Your name at the table" autocomplete="nickname" required>
+        <button class="btn gold" type="submit">Pull up a chair</button>
+      </form>
+      <p class="fine">No real money. Everyone starts with 10,000 play chips and can refill for free.</p>
+    </div>
+  </section>
+
+  <!-- Lobby -->
+  <section id="lobby" class="screen hidden">
+    <header class="bar">
+      <div class="logo small">Old Guys Poker</div>
+      <div class="spacer"></div>
+      <div class="me-chip"><span class="dot" id="lobby-color"></span><span id="lobby-name"></span></div>
+      <div class="bankroll">Bankroll <b id="lobby-bankroll">0</b></div>
+      <button class="btn small" id="refill-btn" title="Top back up to 10,000 play chips">Refill</button>
+    </header>
+    <main class="lobby-main">
+      <h2>Pick a table — click any open seat to sit down</h2>
+      <div id="table-list" class="table-list"></div>
+    </main>
+  </section>
+
+  <!-- Table -->
+  <section id="table-screen" class="screen hidden">
+    <header class="bar">
+      <button class="btn small ghost" id="back-btn">← Lobby</button>
+      <div class="table-title"><b id="t-name"></b> <span id="t-blinds"></span></div>
+      <div class="spacer"></div>
+      <div class="voice-controls">
+        <button class="btn small" id="voice-join">🎙 Join voice</button>
+        <button class="btn small hidden" id="voice-mute">Mute</button>
+        <button class="btn small ghost hidden" id="voice-leave">Leave voice</button>
+        <span id="voice-count" class="muted"></span>
+      </div>
+      <div class="seat-controls">
+        <button class="btn small hidden" id="sitout-btn">Sit out</button>
+        <button class="btn small hidden" id="rebuy-btn">Add chips</button>
+        <button class="btn small ghost hidden" id="stand-btn">Stand up</button>
+      </div>
+      <div class="bankroll">Bankroll <b id="t-bankroll">0</b></div>
+    </header>
+    <div class="table-body">
+      <div id="stage"></div>
+      <aside class="side">
+        <div id="log" class="log"></div>
+        <form id="chat-form" class="chat-form">
+          <input id="chat-input" maxlength="200" placeholder="Say something…" autocomplete="off">
+        </form>
+      </aside>
+    </div>
+    <div id="action-bar" class="action-bar idle" data-idle="Click an open seat to join the game">
+      <button class="btn act fold" data-act="fold">Fold <kbd>F</kbd></button>
+      <button class="btn act call" data-act="call">Check <kbd>C</kbd></button>
+      <div class="raise-box">
+        <div class="presets">
+          <button class="btn tiny" data-preset="min">Min</button>
+          <button class="btn tiny" data-preset="0.5">½ Pot</button>
+          <button class="btn tiny" data-preset="0.75">¾ Pot</button>
+          <button class="btn tiny" data-preset="1">Pot</button>
+          <button class="btn tiny" data-preset="max">All-in</button>
+        </div>
+        <div class="raise-row">
+          <input type="range" id="raise-range">
+          <input type="number" id="raise-input">
+        </div>
+      </div>
+      <button class="btn act raise" data-act="raise">Raise <kbd>R</kbd></button>
+    </div>
+  </section>
+
+  <!-- Buy-in modal -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-card">
+      <h3 id="modal-title">Buy in</h3>
+      <p id="modal-sub" class="muted"></p>
+      <div class="buyin-amount" id="modal-amount">0</div>
+      <input type="range" id="modal-range">
+      <div class="modal-actions">
+        <button class="btn ghost" id="modal-cancel">Cancel</button>
+        <button class="btn gold" id="modal-ok">Sit down</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <div id="audio-sink" hidden></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

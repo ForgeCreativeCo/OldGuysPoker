@@ -1,0 +1,23 @@
+{
+  "name": "old-guys-poker",
+  "version": "1.0.0",
+  "description": "8-seat Texas Hold'em in the browser: play money, 2.5D tables, live voice chat",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test": "node --test test/poker.test.js",
+    "bots": "node scripts/bots.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^4.22.3",
+    "socket.io": "^4.8.4"
+  },
+  "private": true,
+  "devDependencies": {
+    "socket.io-client": "^4.8.4"
+  }
+}
