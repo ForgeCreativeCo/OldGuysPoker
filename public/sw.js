@@ -2,7 +2,7 @@
 // window opens instantly. Gameplay always needs the live server.
 // Cache names are prefixed "ogp-" so we only ever clean up our own caches,
 // never those of another app that shares this origin.
-const VERSION = 'ogp-shell-v4';
+const VERSION = 'ogp-shell-v5';
 const SHELL = [
   '/',
   '/index.html',

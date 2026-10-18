@@ -73,13 +73,15 @@
         <button class="btn small hidden" id="rebuy-btn">Add chips</button>
         <button class="btn small ghost hidden" id="stand-btn">Stand up</button>
       </div>
+      <button class="btn small ghost chat-btn" id="chat-btn" title="Show chat">💬<span class="lbl"> Chat</span><span id="chat-badge" class="chat-badge hidden"></span></button>
       <button class="btn small ghost" id="sound-btn" title="Sound on">🔊</button>
       <div class="bankroll"><span class="lbl">Bankroll </span><b id="t-bankroll">0</b></div>
       <button class="btn small ghost fs-btn" title="Fullscreen">⛶</button>
     </header>
     <div class="table-body">
       <div id="stage"></div>
-      <aside class="side">
+      <aside class="side" id="side">
+        <div class="side-head"><b>Table chat</b><button class="btn tiny ghost" id="chat-close" title="Hide chat">✕</button></div>
         <div id="log" class="log"></div>
         <form id="chat-form" class="chat-form">
           <input id="chat-input" maxlength="200" placeholder="Say something…" autocomplete="off">

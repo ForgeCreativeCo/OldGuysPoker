@@ -105,7 +105,7 @@ input:focus { border-color: var(--gold-2); }
 .table-card.practice { border-color: #4a6272; background: linear-gradient(160deg, #1d2328, var(--panel)); }
 
 /* ---------- table screen ---------- */
-.table-body { flex: 1; display: flex; min-height: 0; }
+.table-body { flex: 1; display: flex; min-height: 0; position: relative; }
 #stage {
   position: relative; flex: 1; overflow: hidden; perspective: 1700px; perspective-origin: 50% 10%;
   background: radial-gradient(ellipse at 50% 55%, #3a2a1c 0%, #1a130e 55%, #0d0a08 100%);
@@ -117,6 +117,14 @@ input:focus { border-color: var(--gold-2); }
 .log-line.win { color: var(--gold); }
 .log-line.board { color: #9fd8b5; }
 .dealer-name { color: var(--gold-2); margin-right: 4px; }
+.side-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px 6px 12px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+body.chat-hidden .side { display: none; }
+.chat-btn { position: relative; }
+body:not(.chat-hidden) .chat-btn { background: var(--panel-2); border-color: var(--gold-2); }
+.chat-badge {
+  position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+  background: var(--red); color: #fff; font: 800 11px/18px Inter; text-align: center;
+}
 .chat-form { padding: 10px; border-top: 1px solid var(--line); }
 .chat-form input { width: 100%; padding: 9px 12px; }
 
@@ -328,7 +336,11 @@ input:focus { border-color: var(--gold-2); }
 }
 
 @media (max-width: 900px) {
-  .side { display: none; }
+  .side {
+    position: absolute; top: 0; right: 0; bottom: 0; z-index: 20; width: min(300px, 75vw);
+    box-shadow: -12px 0 30px #000b; animation: slideIn .18s ease-out;
+  }
+  @keyframes slideIn { from { transform: translateX(40px); opacity: 0; } }
   .bar { gap: 8px; padding: 8px 12px; }
   .btn.act { min-width: 76px; padding: 8px 10px; font-size: 14px; }
   .btn.act kbd { display: none; }
@@ -384,6 +396,14 @@ body { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .table-title span, #voice-count { display: none; }
   .me-chip { font-size: 13px; }
   .bankroll b { font-size: 14px; }
+
+  /* Chat slides over the table (same as narrow screens). */
+  .side {
+    position: absolute; top: 0; right: 0; bottom: 0; z-index: 20; width: min(300px, 60vw);
+    box-shadow: -12px 0 30px #000b; animation: slideIn .18s ease-out;
+  }
+  .log { font-size: 12px; padding: 8px 10px; }
+  .chat-form { padding: 6px; }
 
   /* Table on the left, actions in a column on the right. */
   #table-screen { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto 1fr; }

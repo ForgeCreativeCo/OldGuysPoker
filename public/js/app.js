@@ -133,6 +133,7 @@ async function openTable(tableId, seat) {
   }
   app.tableId = tableId;
   show('table-screen');
+  app.view.resize(); // it was measured while the screen was still hidden
   renderTable(res.state);
   if (seat != null) {
     if (res.state.seats[seat]) toast('Someone just took that seat');
@@ -338,7 +339,31 @@ renderSoundBtn();
 
 socket.on('table:chat', ({ name, color, text }) => {
   log(`<b style="color:${escapeHTML(color)}">${escapeHTML(name)}</b> ${escapeHTML(text)}`, 'chat');
+  if (!chatOpen()) { unread++; renderBadge(); }
 });
+
+// ---------- chat panel show/hide ----------
+// Remembered per device. Small screens start hidden so the table gets the room.
+let unread = 0;
+const chatSaved = (() => { try { return localStorage.getItem('ogp-chat'); } catch { return null; } })();
+const smallScreen = () => matchMedia('(max-width: 900px), (orientation: landscape) and (max-height: 520px)').matches;
+const chatOpen = () => !document.body.classList.contains('chat-hidden');
+function setChat(open, remember = true) {
+  document.body.classList.toggle('chat-hidden', !open);
+  if (open) { unread = 0; renderBadge(); $('log').scrollTop = $('log').scrollHeight; }
+  if (app.view) requestAnimationFrame(() => app.view.resize()); // table gets/loses the room
+  $('chat-btn').title = open ? 'Hide chat' : 'Show chat';
+  if (remember) try { localStorage.setItem('ogp-chat', open ? 'open' : 'closed'); } catch { /* private mode */ }
+}
+function renderBadge() {
+  $('chat-badge').textContent = unread > 9 ? '9+' : unread;
+  $('chat-badge').classList.toggle('hidden', !unread);
+}
+setChat(chatSaved ? chatSaved === 'open' : !smallScreen(), false);
+$('chat-btn').addEventListener('click', () => setChat(!chatOpen()));
+$('chat-close').addEventListener('click', () => setChat(false));
+// On a phone the panel covers the table: tapping the table closes it.
+$('stage').addEventListener('pointerdown', () => { if (smallScreen() && chatOpen()) setChat(false); });
 
 $('chat-form').addEventListener('submit', (e) => {
   e.preventDefault();
