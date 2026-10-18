@@ -337,7 +337,7 @@ const voice = new Voice(socket, {
     $('voice-join').classList.toggle('hidden', voice.active);
     $('voice-mute').classList.toggle('hidden', !voice.active);
     $('voice-leave').classList.toggle('hidden', !voice.active);
-    $('voice-mute').textContent = voice.muted ? '🔇 Unmute' : '🎙 Mute';
+    $('voice-mute').innerHTML = voice.muted ? '🔇<span class="lbl"> Unmute</span>' : '🎙<span class="lbl"> Mute</span>';
     $('voice-mute').classList.toggle('danger', voice.muted);
     $('voice-count').textContent = voice.active ? `${voice.count} in voice` : '';
   },
@@ -360,6 +360,28 @@ socket.on('disconnect', () => { voice.leave(); toast('Connection lost — reconn
 socket.on('connect_error', () => toast('Waking up the game server… this can take up to a minute'));
 
 if (!store.get('ogp-name')) show('login');
+
+// ---------- landscape only ----------
+// Installed app: the manifest asks for landscape. In a phone browser, landscape
+// can only be locked while fullscreen, so touch devices get a fullscreen button.
+// iPhones can't do either, so the portrait "turn your phone" screen covers them.
+const standalone = matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches || navigator.standalone;
+const touch = matchMedia('(pointer: coarse)').matches;
+const canFullscreen = !!(document.documentElement.requestFullscreen && document.fullscreenEnabled);
+
+async function lockLandscape() {
+  try { await screen.orientation.lock('landscape'); } catch { /* not supported here */ }
+}
+async function toggleFullscreen() {
+  if (document.fullscreenElement) return document.exitFullscreen().catch(() => {});
+  try { await document.documentElement.requestFullscreen({ navigationUI: 'hide' }); } catch { return; }
+  lockLandscape();
+}
+document.querySelectorAll('.fs-btn').forEach((b) => {
+  b.classList.toggle('hidden', !touch || standalone || !canFullscreen);
+  b.addEventListener('click', toggleFullscreen);
+});
+if (standalone) lockLandscape();
 
 // Installable app: register the service worker scoped to this app.
 if ('serviceWorker' in navigator) {

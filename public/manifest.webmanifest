@@ -6,7 +6,7 @@
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
-  "orientation": "any",
+  "orientation": "landscape",
   "background_color": "#15110e",
   "theme_color": "#15110e",
   "categories": ["games", "entertainment"],

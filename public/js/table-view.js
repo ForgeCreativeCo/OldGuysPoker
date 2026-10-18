@@ -127,8 +127,15 @@ export class TableView {
 
   resize() {
     const w = this.stage.clientWidth, h = this.stage.clientHeight;
-    const scale = Math.min(w / 1240, h / 790);
-    this.world.style.setProperty('--fit', Math.max(0.3, scale).toFixed(3));
+    // On small screens the whole table shrinks; grow players, labels and
+    // cards back up so names and chip counts stay readable, and leave extra
+    // headroom for the taller standees at the far side of the table.
+    const base = Math.min(w / 1240, h / 790);
+    const ui = Math.min(2.1, Math.max(1, 0.62 / base));
+    const scale = Math.max(0.25, Math.min(w / 1240, h / (790 + 150 * (ui - 1))));
+    this.world.style.setProperty('--fit', scale.toFixed(3));
+    this.world.style.setProperty('--ui', ui.toFixed(3));
+    this.world.style.setProperty('--dy', `${Math.round((ui - 1) * h * 0.07)}px`);
   }
 
   say(text) {

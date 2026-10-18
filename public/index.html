@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Old Guys Poker</title>
   <meta name="description" content="8-seat Texas Hold'em with play money, 2.5D tables and live voice chat.">
   <meta name="application-name" content="Old Guys Poker">
@@ -20,6 +20,13 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <!-- Phones in portrait: ask to rotate (the game is landscape only) -->
+  <div id="rotate" class="rotate">
+    <div class="rotate-phone"></div>
+    <p>Turn your phone sideways to play</p>
+    <button class="btn gold fs-btn" id="rotate-fs">Play fullscreen</button>
+  </div>
+
   <!-- Login -->
   <section id="login" class="screen">
     <div class="login-card">
@@ -41,6 +48,7 @@
       <div class="me-chip"><span class="dot" id="lobby-color"></span><span id="lobby-name"></span></div>
       <div class="bankroll">Bankroll <b id="lobby-bankroll">0</b></div>
       <button class="btn small" id="refill-btn" title="Top back up to 10,000 play chips">Refill</button>
+      <button class="btn small ghost fs-btn" title="Fullscreen">⛶</button>
     </header>
     <main class="lobby-main">
       <h2>Pick a table — click any open seat to sit down</h2>
@@ -51,13 +59,13 @@
   <!-- Table -->
   <section id="table-screen" class="screen hidden">
     <header class="bar">
-      <button class="btn small ghost" id="back-btn">← Lobby</button>
+      <button class="btn small ghost" id="back-btn">←<span class="lbl"> Lobby</span></button>
       <div class="table-title"><b id="t-name"></b> <span id="t-blinds"></span></div>
       <div class="spacer"></div>
       <div class="voice-controls">
-        <button class="btn small" id="voice-join">🎙 Join voice</button>
+        <button class="btn small" id="voice-join" title="Join voice chat">🎙<span class="lbl"> Join voice</span></button>
         <button class="btn small hidden" id="voice-mute">Mute</button>
-        <button class="btn small ghost hidden" id="voice-leave">Leave voice</button>
+        <button class="btn small ghost hidden" id="voice-leave" title="Leave voice chat">✕<span class="lbl"> Leave voice</span></button>
         <span id="voice-count" class="muted"></span>
       </div>
       <div class="seat-controls">
@@ -65,7 +73,8 @@
         <button class="btn small hidden" id="rebuy-btn">Add chips</button>
         <button class="btn small ghost hidden" id="stand-btn">Stand up</button>
       </div>
-      <div class="bankroll">Bankroll <b id="t-bankroll">0</b></div>
+      <div class="bankroll"><span class="lbl">Bankroll </span><b id="t-bankroll">0</b></div>
+      <button class="btn small ghost fs-btn" title="Fullscreen">⛶</button>
     </header>
     <div class="table-body">
       <div id="stage"></div>
