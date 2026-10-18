@@ -1,6 +1,7 @@
 import { TableView, fmt, slotPos } from './table-view.js';
 import { Voice } from './voice.js';
 import { sfx } from './sound.js';
+import { WinnerCard } from './winner-card.js';
 
 const $ = (id) => document.getElementById(id);
 // Empty URL = same origin (local dev). On Netlify this is the Render server.
@@ -173,8 +174,18 @@ function renderTable(state) {
   const myTurn = state.me && state.me.legal;
   const wasMyTurn = prev && prev.handId === state.handId && prev.me && prev.me.legal;
   if (myTurn && !wasMyTurn) sfx.turn();
-  if (state.results && (!prev || !prev.results) && state.me && state.results.won[state.me.seat] != null) sfx.win();
+  // End of hand: the winner's card.
+  const sameHand = prev && prev.id === state.id && prev.handId === state.handId;
+  if (state.results && !(sameHand && prev.results)) winnerCard.show(state, app.me.id);
+  else if (!state.results && prev && prev.results) winnerCard.hide();
 }
+
+const winnerCard = new WinnerCard($('stage'), {
+  onShow: ({ tier, iWon, uncontested }) => {
+    sfx.allin(); // the pot sliding over
+    if (iWon || tier >= 3) setTimeout(() => sfx.fanfare(uncontested ? 0 : tier, iWon), 350);
+  },
+});
 
 // ---------- actions ----------
 function potRaiseTo(frac, state, legal) {

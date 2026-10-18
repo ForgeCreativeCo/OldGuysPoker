@@ -103,6 +103,13 @@ export const sfx = {
   check: () => { noise(0.03, 900, 0.9); noise(0.03, 900, 0.9, 0.11); },
   turn: () => { tone(880, 0.18); tone(1320, 0.25, 0.08, 0.12); },
   win: () => [523, 659, 784].forEach((f, i) => tone(f, 0.3, 0.06, i * 0.11)),
+  /** Rising arpeggio; longer and brighter for bigger hands. */
+  fanfare(tier = 0, mine = false) {
+    const notes = [523, 659, 784, 1047, 1319, 1568].slice(0, 3 + Math.min(3, tier));
+    const vol = mine ? 0.07 : 0.045;
+    notes.forEach((f, i) => tone(f, 0.32, vol, i * 0.1));
+    if (tier >= 3) [1047, 1319, 1568].forEach((f) => tone(f, 0.9, vol * 0.7, notes.length * 0.1 + 0.05));
+  },
 
   get enabled() { return enabled; },
   setEnabled(on) {
